@@ -8,3 +8,7 @@ This repository is referenced from [cuda-mode](https://github.com/cuda-mode/lect
 ### **🎯 Goals**
 ☑️ Understand the basics of CUDA programming.  
 ☑️ Understand the concepts behind Threads, Blocks, and Grids for CUDA kernels.  
+
+
+## **🌳 Flash Attention & Triton**  
+This repository is referenced from [Flash Attention & Triton](https://github.com/hkproj/triton-flash-attention) by Umar Jamil. 
