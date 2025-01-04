@@ -8,6 +8,9 @@ This repository is referenced from [cuda-mode](https://github.com/cuda-mode/lect
 ### **🎯 Goals**
 ☑️ Understand the basics of CUDA programming.  
 ☑️ Understand the concepts behind Threads, Blocks, and Grids for CUDA kernels.  
+☑️ Read and understand the [Triton](https://github.com/openai/triton) codebase.  
+✅ Create the notebook for vector addition using triton.  
+✅ Create the notebook for vector subtraction using triton.  
 
 
 ## **🌳 Flash Attention & Triton**  
