@@ -11,6 +11,8 @@ This repository is referenced from [cuda-mode](https://github.com/cuda-mode/lect
 ☑️ Read and understand the [Triton](https://github.com/openai/triton) codebase.  
 ✅ Create the notebook for vector addition using triton.  
 ✅ Create the notebook for vector subtraction using triton.  
+☑️ Implement the forward pass of the flash attention using triton.  
+☑️ Implement the backward pass of the flash attention using triton. 
 
 
 ## **🌳 Flash Attention & Triton**  
