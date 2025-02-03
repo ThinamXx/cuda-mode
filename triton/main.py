@@ -3,6 +3,51 @@ import triton
 import triton.language as tl
 
 
+@triton.jit
+def _attn_fwd(
+    Q,  # (batch_size, num_heads, seq_len, head_dim)
+    K,  # (batch_size, num_heads, seq_len, head_dim)
+    V,  # (batch_size, num_heads, seq_len, head_dim)
+    softmax_scale,
+    output,  # (batch_size, num_heads, seq_len, head_dim)
+    M,  # (batch_size, num_heads, seq_len)
+    stride_Q_batch,
+    stride_Q_head,
+    stride_Q_seq,
+    stride_Q_dim,
+    stride_K_batch,
+    stride_K_head,
+    stride_K_seq,
+    stride_K_dim,
+    stride_V_batch,
+    stride_V_head,
+    stride_V_seq,
+    stride_V_dim,
+    stride_output_batch,
+    stride_output_head,
+    stride_output_seq,
+    stride_output_dim,
+    batch_size,
+    num_heads: tl.constexpr,
+    seq_len: tl.constexpr,
+    head_dim: tl.constexpr,
+    block_size_Q: tl.constexpr,
+    block_size_KV: tl.constexpr,
+    stage: tl.constexpr,
+):
+    tl.static_assert(block_size_KV <= head_dim)
+
+    # this indicate which block of queries to process.
+    block_index_q = tl.program_id(axis=0)
+
+    # this indicate which head of which batch to process.
+    index_batch_head = tl.program_id(axis=1)
+    # this indicate which batch to process i.e. each batch has num_heads.
+    index_batch = index_batch_head // num_heads
+    # this indicate which head to process.
+    index_head = index_batch_head % num_heads
+
+
 class TritonAttention(torch.autograd.Function):
 
     @staticmethod
