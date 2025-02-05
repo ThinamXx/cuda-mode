@@ -15,9 +15,9 @@ This repository contains my notes and exercises from the book mentioned below.
 ## **🚀Progress**
 
 ### **Day 01**  
-Today, I was focused on setting up the environment and getting familiar with the CUDA programming model. I read the *chapter 1* of the book and created a simple *hello world* program that prints a message from the CPU and the GPU. 
+Today, I was focused on setting up the environment and getting familiar with the CUDA programming model. I read the *chapter 1 & 2* of the book and created a simple *hello world* program and *vector addition* program. I learned about cuda function declaration, memory allocation, memory copy, memory free, kernel launch, thread, block, and grid hierarchy in cuda. 
 
-- [x] Setup the environment
-- [x] Create a simple *hello world* program
-- [x] Print a message from the CPU
-- [x] Print a message from the GPU
+- [x] Setup the environment.
+- [x] Create a simple *hello world* program.
+- [x] Print a message from the CPU and the GPU.
+- [x] Create a program for *vector addition*. 
