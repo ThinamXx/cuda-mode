@@ -21,3 +21,12 @@ Today, I was focused on setting up the environment and getting familiar with the
 - [x] Create a simple *hello world* program.
 - [x] Print a message from the CPU and the GPU.
 - [x] Create a program for *vector addition*. 
+
+### **Day 02**
+Today, I learned about multidimensional arrays and creating a kernel that performs a matrix transformation. Particularly, I created a kernel that converts a color image to a grayscale image using the given formula: $y = 0.21 \times R + 0.72 \times G + 0.07 \times B$. Similarly, I learned that block and thread labels are (z, y, x) order which is reverse of the usual (x, y, z) order but the grid and block dimensions are specified in the usual (x, y, z) order. 
+
+- [x] Create a kernel that converts a color image to a grayscale image.
+- [x] Create a function to print the matrix. 
+- [x] Initialize the input matrix with random values. 
+- [x] Print the input matrix. 
+- [x] Print the result after transformation. 

@@ -41,8 +41,9 @@ void vec_add_device(int n, float* a_h, float* b_h, float* c_h) {
 
     // Part 2: Call the kernel to launch the grid of threads. 
     // to perform the vector addition. 
-    vec_add_kernel<<<ceil(n / 256.0), 256>>>(n, a_d, b_d, c_d);
-    
+    dim3 dimGrid(ceil(n / 256.0), 1, 1);
+    dim3 dimBlock(256, 1, 1);
+    vec_add_kernel<<<dimGrid, dimBlock>>>(n, a_d, b_d, c_d);
 
     // Part 3: Copy the result from the device to the host. 
     // Free the device memory. 
