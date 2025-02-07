@@ -65,8 +65,8 @@ void matrixConv(
 
     // Part 2: Call the kernel to launch the grid of threads. 
     // to perform the matrix conversion. 
-    dim3 dimGrid(ceil(width / 2.0), ceil(height / 2.0), 1);
-    dim3 dimBlock(2, 2, 1);
+    dim3 dimGrid(ceil(width / 32.0), ceil(height / 32.0), 1);
+    dim3 dimBlock(32, 32, 1);
     matrixConv_kernel<<<dimGrid, dimBlock>>>(width, height, P_in_d, P_out_d);
 
     // Part 3: Copy the result from the device to the host. 

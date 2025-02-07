@@ -30,3 +30,11 @@ Today, I learned about multidimensional arrays and creating a kernel that perfor
 - [x] Initialize the input matrix with random values. 
 - [x] Print the input matrix. 
 - [x] Print the result after transformation. 
+
+### **Day 03**
+Today, I am still reading the *chapter 3* of the book. I learned how the threads can also interact with each other parallelly within a block. Particularly, I created a kernel where a block of threads computes the average of the pixel using the surrounding pixels including the pixel itself. I also worked on the matrix multiplication kernel where two square matrices are multiplied and the result is stored in a third square matrix. 
+
+- [x] Create a kernel that computes the average using the surrounding and itself.
+- [x] Understand the multiple dimensions of threads, blocks, and grids.
+- [x] Create a kernel for matrix multiplication. 
+- [x] Print the input matrices and the result after multiplication.
