@@ -16,19 +16,22 @@ void printMatrix(float *matrix, int width, int height) {
 }
 
 __global__ void matrixMul_kernel(int N, float *A, float *B, float *C) {
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
-    if ((row < N) && (col < N)) {
-        float c_sum = 0.0f;
-        // Perform the matrix multiplication
-        // using the row-major order. 
-        for (int k = 0; k < N; k++) {
-            c_sum += A[row * N + k] * B[k * N + col];
+    if (thread_id < N) {
+        for (int row = 0; row < N; row++) {
+            // According to the question, we want each thread to produce
+            // a column of the output matrix, which means that each thread/column
+            // will loop through all the rows of the product matrix. This analogy is
+            // similar to the row_matrix_mul.cu file. 
+            float c_sum = 0.0f;
+
+            for (int k = 0; k < N; k++) {
+                c_sum += A[row * N + k] * B[k * N + thread_id];
+            }
+            C[row * N + thread_id] = c_sum;
         }
-
-        C[row * N + col] = c_sum;
-    }    
+    }
 }
 
 void matrixMul(int N, float *A, float *B, float *C) {
@@ -55,8 +58,8 @@ void matrixMul(int N, float *A, float *B, float *C) {
 
     // Part 2: Call the kernel to launch the grid of threads. 
     // to perform the matrix multiplication. 
-    dim3 dimGrid(ceil(N / 32.0), ceil(N / 32.0), 1);
-    dim3 dimBlock(32, 32, 1);
+    dim3 dimGrid(ceil(N / 32.0), 1, 1);
+    dim3 dimBlock(32, 1, 1);
     matrixMul_kernel<<<dimGrid, dimBlock>>>(N, A_d, B_d, C_d);
 
     // Part 3: Copy the result back to the host. 
@@ -69,7 +72,7 @@ void matrixMul(int N, float *A, float *B, float *C) {
 }
 
 int main() {
-    int N = 5;
+    int N = 3;
     
     int size = N * N * sizeof(float);
 
@@ -98,4 +101,3 @@ int main() {
     
     return 0;
 }
-

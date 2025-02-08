@@ -38,3 +38,9 @@ Today, I am still reading the *chapter 3* of the book. I learned how the threads
 - [x] Understand the multiple dimensions of threads, blocks, and grids.
 - [x] Create a kernel for matrix multiplication. 
 - [x] Print the input matrices and the result after multiplication.
+
+### **Day 04**
+Today, I focused on the exercises of the *chapter 3* from this book. I have created a kernel that multiplies two matrices in such a way that each thread produces a row of the output matrix i.e. [row_matrix_mul.cu](./exercises/row_matrix_mul.cu). I have also created a kernel that multiplies two matrices in such a way that each thread produces a column of the output matrix i.e. [col_matrix_mul.cu](./exercises/col_matrix_mul.cu). These two kernels are similar to each other but the only difference is the way the threads are indexed and I believe the cons of using these kernels are that we are looping through the matrices multiple times. 
+
+- [x] Create a kernel that multiplies two matrices with each thread producing a row of the output matrix.
+- [x] Create a kernel that multiplies two matrices with each thread producing a column of the output matrix. 
