@@ -95,7 +95,11 @@ int main() {
 
     // Print the result. 
     printMatrix(C, N, N);
-    
+
+    // Free the allocated memory. 
+    free(A);
+    free(B);
+    free(C);
     return 0;
 }
 
