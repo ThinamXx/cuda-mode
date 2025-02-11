@@ -45,3 +45,8 @@ Today, I focused on the exercises of the *chapter 3* from this book. I have crea
 - [x] Create a kernel that multiplies two matrices with each thread producing a row of the output matrix.
 - [x] Create a kernel that multiplies two matrices with each thread producing a column of the output matrix.
 - [x] Create a kernel that multiplies a matrix and a vector. 
+
+### **Day 05**  
+I am reading the *chapter 4* of the book. I learned about the streaming multiprocessor (SM), block scheduling, synchronization, and transparent scaling, and warp execution. I also learned about the control divergence, warp scheduling and latency tolerance, resource partitioning, and occupancy, where registers per SM is a limiting factor. 
+
+- [x] Create a host code to get the device properties and device count.
