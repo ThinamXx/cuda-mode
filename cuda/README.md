@@ -46,7 +46,8 @@ Today, I focused on the exercises of the *chapter 3* from this book. I have crea
 - [x] Create a kernel that multiplies two matrices with each thread producing a column of the output matrix.
 - [x] Create a kernel that multiplies a matrix and a vector. 
 
-### **Day 05**  
-I am reading the *chapter 4* of the book. I learned about the streaming multiprocessor (SM), block scheduling, synchronization, and transparent scaling, and warp execution. I also learned about the control divergence, warp scheduling and latency tolerance, resource partitioning, and occupancy, where registers per SM is a limiting factor. I have started reading the *chapter 5* of the book, where I am learning about different memory types and access efficiency in CUDA along with the concept of tiling for reducing the memory access traffic. 
+### **Day 04 [05]**  
+I am reading the *chapter 4* of the book. I learned about the streaming multiprocessor (SM), block scheduling, synchronization, and transparent scaling, and warp execution. I also learned about the control divergence, warp scheduling and latency tolerance, resource partitioning, and occupancy, where registers per SM is a limiting factor. I have started reading the *chapter 5* of the book, where I am learning about different memory types and access efficiency in CUDA along with the concept of tiling for reducing the memory access traffic. I have also created a kernel that multiplies two matrices using tiling i.e. [tiled_matrix_mul.cu](./exercises/tiled_matrix_mul.cu).
 
 - [x] Create a host code to get the device properties and device count.
+- [x] Create a kernel that multiplies two matrices using tiling. 
