@@ -51,3 +51,8 @@ I am reading the *chapter 4* of the book. I learned about the streaming multipro
 
 - [x] Create a host code to get the device properties and device count.
 - [x] Create a kernel that multiplies two matrices using tiling. 
+
+### **Day 05**  
+I am reading the *chapter 5* of the book, where I am learning to build a tiled matrix multiplication kernel. I have created a kernel that multiplies two matrices using tiling i.e. [tiled_matrix_mul.cu](./exercises/tiled_matrix_mul.cu) and the code to check the boundary conditions of the tiled matrix, whenever original matrix is not directly divisible by the tile size. 
+
+- [x] Create a kernel that multiplies two matrices using tiling with boundary conditions.  
