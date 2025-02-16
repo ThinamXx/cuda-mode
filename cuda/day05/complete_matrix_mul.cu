@@ -29,6 +29,46 @@ __global__ void matrixMul_kernel(int J, int K, int L, float *A, float *B, float 
     }
 }
 
+__global__ void tiledMatrixMul_kernel(int J, int K, int L, float *A, float *B, float *C) {
+    __shared__ float A_tile[TILE_SIZE][TILE_SIZE];
+    __shared__ float B_tile[TILE_SIZE][TILE_SIZE];
+
+    int bx = blockIdx.x; 
+    int by = blockIdx.y; 
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+
+    int row = by * TILE_SIZE + ty; 
+    int col = bx * TILE_SIZE + tx; 
+
+    float sum_val = 0.0f;
+    for (int ph = 0; ph < ceil(K / (float)TILE_SIZE); ++ph) {
+        if ((row < J) && (ph * TILE_SIZE + tx < K)) {
+            A_tile[ty][tx] = A[row * K + ph * TILE_SIZE + tx]; // L is the height and K is the width of the matrix A.
+        } else {
+            A_tile[ty][tx] = 0.0f;
+        }
+
+        if (((ph * TILE_SIZE + ty) < K) && (col < L)) {
+            B_tile[ty][tx] = B[(ph * TILE_SIZE + ty) * L + col];
+        } else {
+            B_tile[ty][tx] = 0.0f;
+        }
+
+        __syncthreads();
+
+        for (int k = 0; k < TILE_SIZE; ++k) {
+            sum_val += A_tile[ty][k] * B_tile[k][tx];
+        }
+
+        __syncthreads();
+    }
+
+    if ((row < J) && (col < L)) {
+        C[row * L + col] = sum_val;
+    }
+}
+
 void matrixMul(int J, int K, int L, float *A, float *B, float *C) {
     int size_A = J * K * sizeof(float);
     int size_B = K * L * sizeof(float);
@@ -58,7 +98,8 @@ void matrixMul(int J, int K, int L, float *A, float *B, float *C) {
     // to perform the matrix multiplication. 
     dim3 dimGrid(ceil(J / (float)TILE_SIZE), ceil(L / (float)TILE_SIZE), 1);
     dim3 dimBlock(TILE_SIZE, TILE_SIZE, 1);
-    matrixMul_kernel<<<dimGrid, dimBlock>>>(J, K, L, A_d, B_d, C_d); // launch the kernel without shared memory. 
+    // matrixMul_kernel<<<dimGrid, dimBlock>>>(J, K, L, A_d, B_d, C_d); // launch the kernel without shared memory. 
+    tiledMatrixMul_kernel<<<dimGrid, dimBlock>>>(J, K, L, A_d, B_d, C_d); // launch the kernel with shared memory. 
 
     // Part 3: Copy the result back to the host. 
     // free the device memory. 

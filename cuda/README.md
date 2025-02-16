@@ -53,7 +53,8 @@ I am reading the *chapter 4* of the book. I learned about the streaming multipro
 - [x] Create a kernel that multiplies two matrices using tiling. 
 
 ### **Day 05**  
-I am reading the *chapter 5* of the book, where I am learning to build a tiled matrix multiplication kernel. I have created a kernel that multiplies two matrices using tiling i.e. [tiled_matrix_mul.cu](./exercises/tiled_matrix_mul.cu) and the code to check the boundary conditions of the tiled matrix, whenever original matrix is not directly divisible by the tile size. I have also created a matrix multiplication kernel that multiplies two matrices with different dimensions i.e. [complete_matrix_mul.cu](./day05/complete_matrix_mul.cu).
+I am reading the *chapter 5* of the book, where I am learning to build a tiled matrix multiplication kernel. I have created a kernel that multiplies two matrices using tiling i.e. [tiled_matrix_mul.cu](./exercises/tiled_matrix_mul.cu) and the code to check the boundary conditions of the tiled matrix, whenever original matrix is not directly divisible by the tile size. I have also created a matrix multiplication kernel that multiplies two matrices with different dimensions i.e. [complete_matrix_mul.cu](./day05/complete_matrix_mul.cu). I have also created a kernel that multiplies two matrices with different dimensions using tiling with boundary conditions i.e. [complete_matrix_mul.cu](./day05/complete_matrix_mul.cu).
 
 - [x] Create a kernel that multiplies two matrices using tiling with boundary conditions.  
 - [x] Create a matrix multiplication kernel that multiplies two matrices with different dimensions. 
+- [x] Create a matrix multiplication kernel that multiplies two matrices with different dimensions using tiling with boundary conditions. 
