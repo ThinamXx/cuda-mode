@@ -60,7 +60,8 @@ I am reading the *chapter 5* of the book, where I am learning to build a tiled m
 - [x] Create a matrix multiplication kernel that multiplies two matrices with different dimensions using tiling with boundary conditions.
 
 ### **Day 06**
-I am working on creating a matrix multiplication kernel that dynamically calculates the tile size based on the GPU properties. I have created a function to calculate the appropriate tile size and a kernel that multiplies two matrices with different dimensions using tiling with boundary conditions. Here is the code: [dynamic_matrix_mul.cu](./day06/dynamic_matrix_mul.cu). I am also working on the exercises of the *chapter 5* from this book.
+I am working on creating a matrix multiplication kernel that dynamically calculates the tile size based on the GPU properties. I have created a function to calculate the appropriate tile size and a kernel that multiplies two matrices with different dimensions using tiling with boundary conditions. Here is the code: [dynamic_matrix_mul.cu](./day06/dynamic_matrix_mul.cu). I am also working on the exercises of the *chapter 5* from this book. I have started reading the *chapter 6* of the book, where I am learning about the memory coalescing and thread coarsening. I have created a kernel that multiplies two matrices using coarsening multiple output tiles. Here is the code: [coarse_matrix_mul.cu](./day06/coarse_matrix_mul.cu).
 
 - [x] Create a function to calculate the appropriate tile size using the GPU properties.
 - [x] Create a complete kernel that multiplies two matrices with different dimensions using tiling with boundary conditions.
+- [x] Create a matrix multiplication kernel with coarsening multiple output tiles.
