@@ -65,3 +65,8 @@ I am working on creating a matrix multiplication kernel that dynamically calcula
 - [x] Create a function to calculate the appropriate tile size using the GPU properties.
 - [x] Create a complete kernel that multiplies two matrices with different dimensions using tiling with boundary conditions.
 - [x] Create a matrix multiplication kernel with coarsening multiple output tiles.
+
+### **Day 06 [07]**
+I am working on the exercises of the *chapter 6* from this book. I have created a kernel that multiplies two matrices using corner turning algorithm where one matrix is transposed while loading from global memory to the shared memory. Here is the code: [corner_turning.cu](./day06/corner_turning.cu).
+
+- [x] Create a kernel that multiplies two matrices using corner turning algorithm.
