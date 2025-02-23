@@ -41,6 +41,34 @@ __global__ void conv_1D_kernel(float *input_1D, float *filter_1D, float *output_
     }
 }
 
+__global__ void conv_1D_shared_kernel(float *input_1D, float *filter_1D, float *output_1D, int n) {
+    extern __shared__ float shared_mem[];
+
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    int local_tid = threadIdx.x + FILTER_RADIUS;
+
+    if (tid < n) {
+        shared_mem[local_tid] = input_1D[tid];
+    }
+
+    if (threadIdx.x < FILTER_RADIUS) {
+        shared_mem[threadIdx.x] = (tid >= FILTER_RADIUS) ? input_1D[tid - FILTER_RADIUS] : 0.0f;
+        shared_mem[local_tid + blockDim.x] = (tid + blockDim.x < n) ? input_1D[tid + blockDim.x] : 0.0f;
+    }
+
+    __syncthreads();
+
+    if (tid < n) {
+        float sum = 0.0f;
+
+        for (int i = -FILTER_RADIUS; i <= FILTER_RADIUS; i++) {
+            sum += shared_mem[local_tid + i] * filter_1D[i + FILTER_RADIUS];
+        }
+
+        output_1D[tid] = sum;
+    }
+}
+
 void conv_1D(float *input_1D, float *filter_1D, float *output_1D, int n) {
     int size = n * sizeof(float);
 
@@ -68,13 +96,15 @@ void conv_1D(float *input_1D, float *filter_1D, float *output_1D, int n) {
     // to perform the convolution.
     dim3 dimBlock(256, 1, 1);
     dim3 dimGrid(ceil(n / (float)dimBlock.x), 1, 1);
+    size_t size_shared = (dimBlock.x + FILTER_SIZE - 1) * sizeof(float);
 
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
     cudaEventRecord(start);
 
-    conv_1D_kernel<<<dimGrid, dimBlock>>>(d_input_1D, d_filter_1D, d_output_1D, n);
+    // conv_1D_kernel<<<dimGrid, dimBlock>>>(d_input_1D, d_filter_1D, d_output_1D, n);
+    conv_1D_shared_kernel<<<dimGrid, dimBlock, size_shared>>>(d_input_1D, d_filter_1D, d_output_1D, n);
     cudaDeviceSynchronize();
 
     cudaEventRecord(stop);
