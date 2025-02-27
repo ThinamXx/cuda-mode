@@ -220,5 +220,10 @@ int main() {
         printf("\nBoth of the outputs are same!!!\n");
     }
 
+    free(image);
+    free(filter);
+    free(output);
+    free(output_cpu);
+
     return 0;
 }

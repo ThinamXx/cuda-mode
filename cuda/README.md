@@ -67,8 +67,8 @@ I am working on creating a matrix multiplication kernel that dynamically calcula
 - [x] Create a matrix multiplication kernel with coarsening multiple output tiles.
 
 ### **Day 06 [07]**
-I am working on the exercises of the *chapter 6* from this book. I have created a kernel that multiplies two matrices using corner turning algorithm where one matrix is transposed while loading from global memory to the shared memory. Here is the code: [corner_turning.cu](./day06/corner_turning.cu). I have also created a kernel that convolves a 1D array with a filter. Here is the code: [conv_1D.cu](./day07/conv_1D.cu). I have also created a kernel that convolves a 2D array with a filter. Here is the code: [conv_2D.cu](./day07/conv_2D.cu).
+I am working on the exercises of the *chapter 6* from this book. I have created a kernel that multiplies two matrices using corner turning algorithm where one matrix is transposed while loading from global memory to the shared memory. Here is the code: [corner_turning.cu](./day06/corner_turning.cu). I have also created a kernel that convolves a 1D array with a filter. Here is the code: [conv_1D.cu](./day07/conv_1D.cu). I have also created a kernel that convolves a 2D array with a filter. Here is the code: [conv_2D.cu](./day07/conv_2D.cu) and [const_mem_conv_2D.cu](./day07/const_mem_conv_2D.cu).
 
 - [x] Create a kernel that multiplies two matrices using corner turning algorithm.
 - [x] Create a kernel that convolves a 1D array with a filter.
-- [x] Create a kernel that convolves a 2D array with a filter.
+- [x] Create a kernel that convolves a 2D array with a filter using constant memory and shared memory.
