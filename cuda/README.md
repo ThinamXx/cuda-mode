@@ -72,3 +72,9 @@ I am working on the exercises of the *chapter 6* from this book. I have created 
 - [x] Create a kernel that multiplies two matrices using corner turning algorithm.
 - [x] Create a kernel that convolves a 1D array with a filter.
 - [x] Create a kernel that convolves a 2D array with a filter using constant memory and shared memory.
+
+### **Day 08**
+I am reading the *chapter 7* of the book. I am reading about the parallel convolution, constant memory and caching, and tiled convolution. I have created a kernel that convolves a 2D array with a filter using shared memory and tiling. Here is the code: [tiled_conv_2D.cu](./day08/tiled_conv_2D.cu). I have also created a kernel that uses cache for loading the halo elements. Here is the code: [cache_conv_2D.cu](./day08/cache_conv_2D.cu).
+
+- [x] Create a kernel that convolves a 2D array with a filter using shared memory and tiling.
+- [x] Create a kernel that convolves a 2D array with a filter using cache for loading the halo elements.
