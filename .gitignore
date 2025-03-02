@@ -2,3 +2,5 @@ blog/
 test.py
 results.txt
 test*
+cuda/day08/prewitt/build/
+cuda/day08/prewitt/prewitt_cuda.egg-info/

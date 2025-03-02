@@ -74,7 +74,14 @@ I am working on the exercises of the *chapter 6* from this book. I have created 
 - [x] Create a kernel that convolves a 2D array with a filter using constant memory and shared memory.
 
 ### **Day 08**
-I am reading the *chapter 7* of the book. I am reading about the parallel convolution, constant memory and caching, and tiled convolution. I have created a kernel that convolves a 2D array with a filter using shared memory and tiling. Here is the code: [tiled_conv_2D.cu](./day08/tiled_conv_2D.cu). I have also created a kernel that uses cache for loading the halo elements. Here is the code: [cache_conv_2D.cu](./day08/cache_conv_2D.cu).
+I am reading the *chapter 7* of the book. I am reading about the parallel convolution, constant memory and caching, and tiled convolution. I have created a kernel that convolves a 2D array with a filter using shared memory and tiling. Here is the code: [tiled_conv_2D.cu](./day08/tiled_conv_2D.cu). I have also created a kernel that uses cache for loading the halo elements. Here is the code: [tiled_conv_cache.cu](./day08/tiled_conv_cache.cu). Today, I worked on integrating the Prewitt filter implemented in CUDA to the PyTorch framework. Here is the code: [prewitt/](./day08/prewitt/). Information on building the CUDA extension in PyTorch is:
+
+```bash
+cd day08/prewitt
+pip install -e .
+python prewitt_kernel_test.py
+```
 
 - [x] Create a kernel that convolves a 2D array with a filter using shared memory and tiling.
 - [x] Create a kernel that convolves a 2D array with a filter using cache for loading the halo elements.
+- [x] Integrate the Prewitt filter implemented in CUDA to the PyTorch framework.
