@@ -22,6 +22,27 @@ void printMatrix(float *matrix, int width, int height) {
     printf("\n\n");
 }
 
+void conv_2D_CPU(float *image, float *filter, float *output, int width) {
+    for (int row = 0; row < width; row++) {
+        for (int col = 0; col < width; col++) {
+            float sum = 0.0f;
+
+            for (int i = 0; i < FILTER_SIZE; i++) {
+                for (int j = 0; j < FILTER_SIZE; j++) {
+                    int image_row = row + i - FILTER_RADIUS;
+                    int image_col = col + j - FILTER_RADIUS;
+
+                    if (image_row >= 0 && image_row < width && image_col >= 0 && image_col < width) {
+                        sum += image[image_row * width + image_col] * filter[i * FILTER_SIZE + j];
+                    }
+                }
+            }
+
+            output[row * width + col] = sum;
+        }
+    }
+}
+
 __global__ void conv2D_kernel(
     float *image,
     float *output,
@@ -115,13 +136,14 @@ void conv_2D(float *image, float *filter, float *output, int width) {
 }
 
 int main() {
-    int N = 16;
+    int N = 7;
     int size = N * N * sizeof(float);
     int filter_size = FILTER_SIZE * FILTER_SIZE * sizeof(float);
 
     float *image = (float *)malloc(size);
     float *filter = (float *)malloc(filter_size);
     float *output = (float *)malloc(size);
+    float *output_cpu = (float *)malloc(size);
 
     // Initialize image and filter with random values.
     for (int i = 0; i < N * N; i++) {
@@ -136,12 +158,26 @@ int main() {
 
     // Call the convolution function. 
     conv_2D(image, filter, output, N);
-
+    conv_2D_CPU(image, filter, output_cpu, N);
     printMatrix(output, N, N);
+
+    // Compare the results:
+    bool status = true;
+    for (int i = 0; i < N * N; i++) {
+        if (abs(output[i] - output_cpu[i]) > 1e-6) {
+            status = false;
+        }
+    }
+    if (status) {
+        printf("\nBoth of the outputs are same!!!\n");
+    } else {
+        printf("\nBoth of the outputs are not same!!!\n");
+    }
 
     free(image);
     free(filter);
     free(output);
+    free(output_cpu);
 
     return 0;
 }

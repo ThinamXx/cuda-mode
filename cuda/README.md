@@ -53,28 +53,28 @@ I am reading the *chapter 4* of the book. I learned about the streaming multipro
 - [x] Create a kernel that multiplies two matrices using tiling. 
 
 ### **Day 05**  
-I am reading the *chapter 5* of the book, where I am learning to build a tiled matrix multiplication kernel. I have created a kernel that multiplies two matrices using tiling i.e. [tiled_matrix_mul.cu](./exercises/tiled_matrix_mul.cu) and the code to check the boundary conditions of the tiled matrix, whenever original matrix is not directly divisible by the tile size. I have also created a matrix multiplication kernel that multiplies two matrices with different dimensions i.e. [complete_matrix_mul.cu](./day05/complete_matrix_mul.cu). I have also created a kernel that multiplies two matrices with different dimensions using tiling with boundary conditions i.e. [complete_matrix_mul.cu](./day05/complete_matrix_mul.cu).
+I am reading the *chapter 5* of the book, where I am learning to build a tiled matrix multiplication kernel. I have created a kernel that multiplies two matrices using tiling with boundary conditions i.e. [tiled_matrix_mul.cu](./exercises/tiled_matrix_mul.cu) and the code to check the boundary conditions of the tiled matrix, whenever original matrix is not directly divisible by the tile size. I have also created a matrix multiplication kernel that multiplies two matrices with different dimensions i.e. [complete_matrix_mul.cu](./day05/complete_matrix_mul.cu). I have also created a kernel that multiplies two matrices with different dimensions using tiling with boundary conditions i.e. [complete_matrix_mul.cu](./day05/complete_matrix_mul.cu).
 
 - [x] Create a kernel that multiplies two matrices using tiling with boundary conditions.  
 - [x] Create a matrix multiplication kernel that multiplies two matrices with different dimensions. 
 - [x] Create a matrix multiplication kernel that multiplies two matrices with different dimensions using tiling with boundary conditions.
 
 ### **Day 06**
-I am working on creating a matrix multiplication kernel that dynamically calculates the tile size based on the GPU properties. I have created a function to calculate the appropriate tile size and a kernel that multiplies two matrices with different dimensions using tiling with boundary conditions. Here is the code: [dynamic_matrix_mul.cu](./day06/dynamic_matrix_mul.cu). I am also working on the exercises of the *chapter 5* from this book. I have started reading the *chapter 6* of the book, where I am learning about the memory coalescing and thread coarsening. I have created a kernel that multiplies two matrices using coarsening multiple output tiles. Here is the code: [coarse_matrix_mul.cu](./day06/coarse_matrix_mul.cu).
+I am working on creating a matrix multiplication kernel that dynamically calculates the tile size based on the GPU properties. I have created a function to calculate the appropriate tile size and a kernel that multiplies two matrices with different dimensions using tiling with boundary conditions [dynamic_matrix_mul.cu](./day06/dynamic_matrix_mul.cu). I am also working on the exercises of the *chapter 5* from this book. I have started reading the *chapter 6* of the book, where I am learning about the memory coalescing and thread coarsening. I have created a kernel that multiplies two matrices using coarsening multiple output tiles [coarse_matrix_mul.cu](./day06/coarse_matrix_mul.cu).
 
 - [x] Create a function to calculate the appropriate tile size using the GPU properties.
 - [x] Create a complete kernel that multiplies two matrices with different dimensions using tiling with boundary conditions.
 - [x] Create a matrix multiplication kernel with coarsening multiple output tiles.
 
 ### **Day 06 [07]**
-I am working on the exercises of the *chapter 6* from this book. I have created a kernel that multiplies two matrices using corner turning algorithm where one matrix is transposed while loading from global memory to the shared memory. Here is the code: [corner_turning.cu](./day06/corner_turning.cu). I have also created a kernel that convolves a 1D array with a filter. Here is the code: [conv_1D.cu](./day07/conv_1D.cu). I have also created a kernel that convolves a 2D array with a filter. Here is the code: [conv_2D.cu](./day07/conv_2D.cu) and [const_mem_conv_2D.cu](./day07/const_mem_conv_2D.cu).
+I am working on the exercises of the *chapter 6* from this book. I have created a kernel that multiplies two matrices using corner turning algorithm where one matrix is transposed while loading from global memory to the shared memory [corner_turning.cu](./day06/corner_turning.cu). I have also created a kernel that convolves a 1D array with a filter [conv_1D.cu](./day07/conv_1D.cu). I have also created a kernel that convolves a 2D array with a filter [conv_2D.cu](./day07/conv_2D.cu) and [const_mem_conv_2D.cu](./day07/const_mem_conv_2D.cu).
 
 - [x] Create a kernel that multiplies two matrices using corner turning algorithm.
 - [x] Create a kernel that convolves a 1D array with a filter.
 - [x] Create a kernel that convolves a 2D array with a filter using constant memory and shared memory.
 
 ### **Day 08**
-I am reading the *chapter 7* of the book. I am reading about the parallel convolution, constant memory and caching, and tiled convolution. I have created a kernel that convolves a 2D array with a filter using shared memory and tiling. Here is the code: [tiled_conv_2D.cu](./day08/tiled_conv_2D.cu). I have also created a kernel that uses cache for loading the halo elements. Here is the code: [tiled_conv_cache.cu](./day08/tiled_conv_cache.cu). Today, I worked on integrating the Prewitt filter implemented in CUDA to the PyTorch framework. Here is the code: [prewitt/](./day08/prewitt/). Information on building the CUDA extension in PyTorch is:
+I am reading the *chapter 7* of the book. I am reading about the parallel convolution, constant memory and caching, and tiled convolution. I have created a kernel that convolves a 2D array with a filter using shared memory and tiling [tiled_conv_2D.cu](./day08/tiled_conv_2D.cu). I have also created a kernel that uses cache for loading the halo elements [tiled_conv_cache.cu](./day08/tiled_conv_cache.cu). Today, I have also worked on integrating the Prewitt filter implemented in CUDA to the PyTorch framework [prewitt/](./day08/prewitt/). The information on building the CUDA extension in PyTorch is:
 
 ```bash
 cd day08/prewitt
@@ -85,3 +85,22 @@ python prewitt_kernel_test.py
 - [x] Create a kernel that convolves a 2D array with a filter using shared memory and tiling.
 - [x] Create a kernel that convolves a 2D array with a filter using cache for loading the halo elements.
 - [x] Integrate the Prewitt filter implemented in CUDA to the PyTorch framework.
+
+### **Day 09**
+I am working on creating a CUDA kernel that convolves a 3D array with a filter.
+
+```bash
+# RTX 3000 series.
+nvcc -arch=sm_86 ....cu -o ...
+
+# RTX 4000 series.
+nvcc -arch=sm_89 ....cu -o ...
+
+# For A100.
+nvcc -arch=sm_80 ....cu -o ...
+
+# For H100.
+nvcc -arch=sm_90 ....cu -o ...
+```
+
+- [x] Create a CUDA kernel that convolves a 3D array with a filter.
