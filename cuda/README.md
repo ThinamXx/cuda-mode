@@ -87,7 +87,7 @@ python prewitt_kernel_test.py
 - [x] Integrate the Prewitt filter implemented in CUDA to the PyTorch framework.
 
 ### **Day 09**
-I am working on creating a CUDA kernel that convolves a 3D array with a filter. I have started working on creating a kernel that computes the softmax of a 1D array [softmax_1D.cu](./day09/softmax/softmax_1D.cu). 
+I am working on creating a CUDA kernel that convolves a 3D array with a filter. I have started working on creating a kernel that computes the softmax of a 1D array [softmax_1D.cu](./day09/softmax/softmax_1D.cu). I have created a CUDA kernel that computes the softmax of a 2D array [softmax_2D.cu](./day09/softmax/softmax_2D.cu) along with the test file [softmax_test.py](./day09/softmax/softmax_test.py) to test the kernel alongside the PyTorch softmax function.
 
 ```bash
 # RTX 3000 series.
@@ -105,3 +105,5 @@ nvcc -arch=sm_90 ....cu -o ...
 
 - [x] Create a CUDA kernel that convolves a 3D array with a filter.
 - [x] Create a CUDA kernel that computes the softmax of a 1D array.
+- [x] Create a CUDA kernel that computes the softmax of a 2D array.
+- [x] Integrate the softmax implemented in CUDA to the PyTorch framework.

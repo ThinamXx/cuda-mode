@@ -49,7 +49,7 @@ __global__ void softmax_kernel(float *x, float *y, int seq_len) {
         float sum_val = 0.0f;
 
         for (int i = 0; i < seq_len; i++) {
-            int cur_val = x[idx * seq_len + i];
+            float cur_val = x[idx * seq_len + i];
             float max_cur = fmaxf(max_val, cur_val);
             float sum_cur = sum_val * expf(max_val - max_cur) + expf(cur_val - max_cur);
             max_val = max_cur;
@@ -95,7 +95,7 @@ void softmax(float *x, float *y, int seq_len) {
 }
 
 int main() {
-    int seq_len = 4;
+    int seq_len = 10;
 
     float *x = (float *)malloc(seq_len * seq_len * sizeof(float));
     float *y = (float *)malloc(seq_len * seq_len * sizeof(float));
