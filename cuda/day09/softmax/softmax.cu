@@ -24,8 +24,8 @@ __global__ void softmax_kernel(float *x, float *y, int seq_len) {
 }
 
 void cudaSoftmax(float *input, float *output, int seq_len) {
-    const dim3 blockDim(256, 1, 1);
-    const dim3 gridDim(ceil(seq_len / 256.0), 1, 1);
+    const dim3 blockDim(32, 1, 1);
+    const dim3 gridDim(ceil(seq_len / 32.0), 1, 1);
 
     softmax_kernel<<<gridDim, blockDim>>>(input, output, seq_len);
     cudaDeviceSynchronize();

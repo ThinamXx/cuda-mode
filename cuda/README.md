@@ -107,3 +107,8 @@ nvcc -arch=sm_90 ....cu -o ...
 - [x] Create a CUDA kernel that computes the softmax of a 1D array.
 - [x] Create a CUDA kernel that computes the softmax of a 2D array.
 - [x] Integrate the softmax implemented in CUDA to the PyTorch framework.
+
+### **Day 10**
+I am working on creating a CUDA kernel that performs layer normalization on input matrix of size batch_size x seq_len x embed_dim using shared memory here [layer_norm.cu](./day10/normalization/layer_norm.cu). I strongly believe that I need to learn reduction techniques in CUDA to make the code more efficient.
+
+- [x] Create a CUDA kernel that performs layer normalization on input matrix using shared memory.
