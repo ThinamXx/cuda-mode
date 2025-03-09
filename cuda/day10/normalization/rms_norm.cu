@@ -4,118 +4,89 @@
 #include <iostream>
 #include <cuda_runtime.h>
 
-// You can take the reference for LayerNorm from here:
-// https://github.com/ThinamXx/Meta-llama/blob/main/llama/transformer.py#L57C1-L68C70
+// You can take the reference for RMSNorm from here: 
+// https://github.com/ThinamXx/Meta-llama/blob/main/llama/llama.py#L80C1-L89C63
 
-void layerNorm_CPU(
+void rmsNorm_CPU(
     float *x,
-    float *y, 
-    int batch_size, 
-    int seq_len,
-    int embed_dim, 
-    float eps,
+    float *y,
     float *gamma,
-    float *beta
+    float *beta,
+    int batch_size,
+    int seq_len,
+    int embed_dim,
+    float eps
 ) {
     for (int b = 0; b < batch_size; b++) {
         for (int s = 0; s < seq_len; s++) {
-            // 1. Calculate mean across the embedding dimension.
-            float mean = 0.0f;
+            // 1. Calculate the rms score across the embedding dimension.
+            float rms_score = 0.0f;
             for (int d = 0; d < embed_dim; d++) {
                 int index = b * seq_len * embed_dim + s * embed_dim + d;
-                mean += x[index];
+                rms_score += x[index] * x[index];
             }
-            mean /= embed_dim;
+            rms_score /= embed_dim;
+            rms_score = sqrtf(rms_score + eps);
 
-            // 2. Calculate variance across the embedding dimension.
-            // The formula for variance is:
-            // variance = sum((x - mean)^2) / embed_dim
-            float variance = 0.0f;
+            // 2. Apply the gamma and beta to the rms score.
             for (int d = 0; d < embed_dim; d++) {
                 int index = b * seq_len * embed_dim + s * embed_dim + d;
-                float diff = x[index] - mean; 
-                variance += diff * diff;
+                y[index] = gamma[d] * (x[index] / rms_score) + beta[d];
             }
-            variance /= embed_dim;
-
-            // 3. Apply normalization formula.
-            // The formula for normalization is:
-            // y = (x - mean) / sqrt(variance + eps) * gamma + beta
-            float sum = 0.0f;
-            float sum_squared = 0.0f;
-            for (int d = 0; d < embed_dim; d++) {
-                int index = b * seq_len * embed_dim + s * embed_dim + d;
-                float normalized = (x[index] - mean) / sqrtf(variance + eps);
-                y[index] = gamma[d] * normalized + beta[d];
-
-                sum += normalized;
-                sum_squared += normalized * normalized;
-            }
-            printf("\n\n");
-            printf("Mean check: %f, variance check: %f", sum / embed_dim, sum_squared / embed_dim);
-            printf("\n\n");
         }
     }
 }
 
-__global__ void layerNorm_kernel(
+__global__ void rmsNorm_kernel(
     float *x,
     float *y,
+    float *gamma,
+    float *beta,
     int batch_size,
     int seq_len,
     int embed_dim,
-    float eps,
-    float *gamma,
-    float *beta
+    float eps
 ) {
     int b = blockIdx.x;
     int s = blockIdx.y;
     int d = threadIdx.x;
-    
-    __shared__ float s_mean;
-    __shared__ float s_variance;
+
+    // I was thinking of using shared memory for gamma and beta, but 
+    // sometimes the size of gamma and beta is too large to fit into 
+    // the shared memory so only keeping rms_score in the shared memory.
+    __shared__ float s_rms_score;
 
     if (threadIdx.x == 0) {
-        // 1. Calculate the mean across the embedding dimension.
-        float sum = 0.0f;
+        // 1. Calculate the rms score across the embedding dimension.
+        float rms_score = 0.0f;
         for (int i = 0; i < embed_dim; i++) {
             int idx = b * seq_len * embed_dim + s * embed_dim + i;
-            sum += x[idx];
+            rms_score += x[idx] * x[idx];
         }
-        s_mean = sum / embed_dim;
-
-        // 2. Calculate the variance across the embedding dimension.
-        float sum_variance = 0.0f;
-        for (int i = 0; i < embed_dim; i++) {
-            int idx = b * seq_len * embed_dim + s * embed_dim + i;
-            float diff = x[idx] - s_mean;
-            sum_variance += diff * diff;
-        }
-        s_variance = sum_variance / embed_dim;
+        s_rms_score = sqrtf((rms_score / embed_dim) + eps);
     }
 
-    // Ensure the mean and variance are available to all threads.
+    // Ensure the rms_score is available to all threads.
     __syncthreads();
 
     if (d < embed_dim) {
-        // 3. Apply the normalization formula.
         int index = b * seq_len * embed_dim + s * embed_dim + d;
-        float normalized = (x[index] - s_mean) / sqrtf(s_variance + eps);
-        y[index] = gamma[d] * normalized + beta[d];
-    }
+        y[index] = gamma[d] * (x[index] / s_rms_score) + beta[d];
+    }   
 }
 
-void layerNorm(
+void rmsNorm(
     float *x,
     float *y,
+    float *gamma,
+    float *beta,
     int batch_size,
     int seq_len,
     int embed_dim,
-    float eps,
-    float *gamma,
-    float *beta
+    float eps
 ) {
     int size = batch_size * seq_len * embed_dim * sizeof(float);
+    int embed_dim_size = embed_dim * sizeof(float);
 
     float *d_x, *d_y, *d_gamma, *d_beta;
 
@@ -128,30 +99,30 @@ void layerNorm(
     if (err != cudaSuccess) {
         printf("%s in %s at line %d\n", cudaGetErrorString(err), __FILE__, __LINE__);
     }
-    err = cudaMalloc((void**)&d_gamma, embed_dim * sizeof(float));
+    err = cudaMalloc((void**)&d_gamma, embed_dim_size);
     if (err != cudaSuccess) {
         printf("%s in %s at line %d\n", cudaGetErrorString(err), __FILE__, __LINE__);
     }
-    err = cudaMalloc((void**)&d_beta, embed_dim * sizeof(float));
+    err = cudaMalloc((void**)&d_beta, embed_dim_size);
     if (err != cudaSuccess) {
         printf("%s in %s at line %d\n", cudaGetErrorString(err), __FILE__, __LINE__);
     }
 
-    // 2. Copy input to device memory.
+    // 2. Copy the input, gamma, beta to the device.
     cudaMemcpy(d_x, x, size, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_gamma, gamma, embed_dim * sizeof(float), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_beta, beta, embed_dim * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_gamma, gamma, embed_dim_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_beta, beta, embed_dim_size, cudaMemcpyHostToDevice);
 
     // 3. Call the kernel to launch the grid of threads.
     dim3 blockDim(embed_dim, 1, 1);
     dim3 gridDim(batch_size, seq_len, 1);
-    layerNorm_kernel<<<gridDim, blockDim>>>(d_x, d_y, batch_size, seq_len, embed_dim, eps, d_gamma, d_beta);
+    rmsNorm_kernel<<<gridDim, blockDim>>>(d_x, d_y, d_gamma, d_beta, batch_size, seq_len, embed_dim, eps);
     cudaDeviceSynchronize();
 
-    // 4. Copy output from device memory.
+    // 4. Copy the output from the device to the host.
     cudaMemcpy(y, d_y, size, cudaMemcpyDeviceToHost);
 
-    // 5. Free device memory.
+    // 5. Free the device memory.
     cudaFree(d_x);
     cudaFree(d_y);
     cudaFree(d_gamma);
@@ -164,9 +135,11 @@ int main() {
     int embed_dim = 4;
     float eps = 1e-5;
 
-    float *x = (float *)malloc(batch_size * seq_len * embed_dim * sizeof(float));
-    float *y = (float *)malloc(batch_size * seq_len * embed_dim * sizeof(float));
-    float *cpu_y = (float *)malloc(batch_size * seq_len * embed_dim * sizeof(float));
+    int size = batch_size * seq_len * embed_dim * sizeof(float);
+
+    float *x = (float *)malloc(size);
+    float *y = (float *)malloc(size);
+    float *cpu_y = (float *)malloc(size);
 
     // Since, we are normalizing along the embedding or last dimension, 
     // the gemma and beta will be of size embed_dim. 
@@ -185,16 +158,16 @@ int main() {
         beta[i] = 0.0f;
     }
 
-    layerNorm(x, y, batch_size, seq_len, embed_dim, eps, gamma, beta);
-    layerNorm_CPU(x, cpu_y, batch_size, seq_len, embed_dim, eps, gamma, beta);
+    rmsNorm(x, y, gamma, beta, batch_size, seq_len, embed_dim, eps);
+    rmsNorm_CPU(x, cpu_y, gamma, beta, batch_size, seq_len, embed_dim, eps);
 
-    printf("\nLayerNorm CPU Output:\n");
+    printf("\nRMSNorm CPU Output:\n");
     for (int i = 0; i < batch_size * seq_len * embed_dim; i++) {
         printf("%f ", cpu_y[i]);
     }
     printf("\n\n");
 
-    printf("\nLayerNorm GPU Output:\n");
+    printf("\nRMSNorm GPU Output:\n");
     for (int i = 0; i < batch_size * seq_len * embed_dim; i++) {
         printf("%f ", y[i]);
     }
