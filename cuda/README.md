@@ -109,6 +109,7 @@ nvcc -arch=sm_90 ....cu -o ...
 - [x] Integrate the softmax implemented in CUDA to the PyTorch framework.
 
 ### **Day 10**
-I am working on creating a CUDA kernel that performs layer normalization on input matrix of size batch_size x seq_len x embed_dim using shared memory here [layer_norm.cu](./day10/normalization/layer_norm.cu). I strongly believe that I need to learn reduction techniques in CUDA to make the code more efficient.
+I am working on creating a CUDA kernel that performs layer normalization on input matrix of size batch_size x seq_len x embed_dim using shared memory here [layer_norm.cu](./day10/normalization/layer_norm.cu). I strongly believe that I need to learn reduction techniques in CUDA to make the code more efficient. I have created a normalization test file [normalization_test.py](./day10/normalization/normalization_test.py) to test the layer normalization kernel alongside the PyTorch layer normalization function with various configurations and outputs.
 
 - [x] Create a CUDA kernel that performs layer normalization on input matrix using shared memory.
+- [x] Create a test file to test the layer normalization kernel alongside the PyTorch layer normalization function.
