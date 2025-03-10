@@ -17,23 +17,29 @@ DEFAULT_CONFIG = {
 
 def load_extensions():
     """Load CUDA extensions for testing."""
-    extensions = {}
+    sources = ["bind.cpp", "layer_norm_kernel.cu", "rms_norm_kernel.cu"]
+    functions = load("functions", sources=sources, verbose=True)
 
-    # Layer Normalization.
-    extensions["layer_norm"] = load(
-        "functions", sources=["bind.cpp", "layer_norm_kernel.cu"], verbose=True
-    )
-
-    return extensions
+    return functions
 
 
-def get_normalizations(extensions):
+def get_normalizations(functions):
     """Get dictionary of normalization functions organized by type."""
     norm_funcs = {
         "layer_norm": {
-            "cuda": extensions["layer_norm"].layerNorm,
-            "pytorch": lambda x, eps: F.layer_norm(x, [x.size(-1)], eps=eps),
-        }
+            "cuda": functions.layerNorm,
+            "pytorch": lambda x, eps: F.layer_norm(
+                x,
+                [x.size(-1)],
+                eps=eps,
+            ),
+        },
+        "rms_norm": {
+            "cuda": functions.rmsNorm,
+            "pytorch": lambda x, eps: torch.nn.modules.normalization.RMSNorm(
+                x.size(-1), eps=eps
+            ).to(x.device)(x),
+        },
     }
 
     return norm_funcs
@@ -132,11 +138,10 @@ def run_benchmark_suite(norm_funcs, config=None):
 
 def test_normalizations():
     """Test different normalization implementations."""
-    extensions = load_extensions()
+    functions = load_extensions()
 
-    norm_funcs = get_normalizations(extensions)
+    norm_funcs = get_normalizations(functions)
 
-    # Generate test data for LayerNorm.
     config = DEFAULT_CONFIG
     x = torch.rand(
         [config["batch_size"], config["seq_len"], config["embed_dim"]],
