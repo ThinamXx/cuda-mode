@@ -6,3 +6,4 @@ cuda/day08/prewitt/build/
 cuda/day08/prewitt/prewitt_cuda.egg-info/
 __pycache__/
 *.pytest_cache/
+test.ipynb
