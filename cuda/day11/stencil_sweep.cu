@@ -43,7 +43,7 @@ __global__ void stencilKernel(float *in, float *out, int N) {
 }
 
 void stencilSweep(float *in, float *out, int N) {
-    int size = N * N * N * sizeof(int);
+    int size = N * N * N * sizeof(float);
     float *in_d, *out_d;
 
     // Part 1: Allocate device memory for input and output.
@@ -90,7 +90,7 @@ void stencilSweep(float *in, float *out, int N) {
 int main() {
     int N = 4;
 
-    int size = N * N * N * sizeof(int);
+    int size = N * N * N * sizeof(float);
     float *in = (float *)malloc(size);
     float *out = (float *)malloc(size);
 
