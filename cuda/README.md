@@ -114,3 +114,8 @@ I am working on creating a CUDA kernel that performs layer normalization on inpu
 - [x] Create a CUDA kernel that performs layer normalization on input matrix using shared memory.
 - [x] Create a test file to test the layer normalization kernel alongside the PyTorch layer normalization function.
 - [x] Create a CUDA kernel that performs **self-attention**.
+
+### **Day 11**
+I am reading the *chapter 8* of the book where I am learning about the stencil computations. I have created a simple CUDA kernel that performs a stencil computation on a 3D input array [stencil_sweep.cu](./day11/stencil_sweep.cu).
+
+- [x] Create a CUDA kernel that performs a stencil computation on a 3D input array.

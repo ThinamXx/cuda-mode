@@ -171,7 +171,7 @@ __global__ void selfAttentionOutput_kernel(
         attention_output[row * embed_dim + col] = sum_val;
     }
 }
-   
+
 void selfAttention(
     float *query,
     float *key,
