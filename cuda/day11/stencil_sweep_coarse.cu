@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 
-#define IN_TILE_WIDTH 8
-#define OUT_TILE_WIDTH 6
+#define IN_TILE_WIDTH 32
+#define OUT_TILE_WIDTH 30
 
 __constant__ float c0;
 __constant__ float c1;
@@ -29,38 +29,55 @@ void printMatrix(float *matrix, int width, int height, int depth) {
     printf("\n\n");
 }
 
-__global__ void stencilSweepSharedKernel(float *in, float *out, int N) {
-    __shared__ float input_tile[IN_TILE_WIDTH][IN_TILE_WIDTH][IN_TILE_WIDTH];
+__global__ void stencilSweepCoarseKernel(float *in, float *out, int N) {
+    // Apply the thread coarsening in the z direction. 
 
-    int tx = threadIdx.x;
+    __shared__ float in_prev_shared[IN_TILE_WIDTH][IN_TILE_WIDTH];
+    __shared__ float in_curr_shared[IN_TILE_WIDTH][IN_TILE_WIDTH];
+    __shared__ float in_next_shared[IN_TILE_WIDTH][IN_TILE_WIDTH];
+
     int ty = threadIdx.y;
-    int tz = threadIdx.z;
+    int tx = threadIdx.x;
 
-    int i = blockIdx.z * OUT_TILE_WIDTH + tz - 1; // 1 is the order of the stencil. 
-    int j = blockIdx.y * OUT_TILE_WIDTH + ty - 1;
+    int iStart = blockIdx.z * OUT_TILE_WIDTH;
+    int j = blockIdx.y * OUT_TILE_WIDTH + ty - 1; // -1 is the order of the stencil. 
     int k = blockIdx.x * OUT_TILE_WIDTH + tx - 1;
 
-    if (i >= 0  && i < N && j >= 0 && j < N && k >= 0 && k < N) {
-        input_tile[tz][ty][tx] = in[i * N * N + j * N + k];
+    if (iStart - 1 >= 0 && iStart - 1 < N && j >= 0 && j < N && k >= 0 && k < N) {
+        in_prev_shared[ty][tx] = in[(iStart - 1) * N * N + j * N + k];
     }
-    __syncthreads();
 
-    if (i >= 1 && i < N - 1 && j >= 1 && j < N - 1 && k >= 1 && k < N - 1) {
-        if (tz >= 1 && tz < IN_TILE_WIDTH - 1 && 
-            ty >= 1 && ty < IN_TILE_WIDTH - 1 && 
-            tx >= 1 && tx < IN_TILE_WIDTH - 1) {
-                out[i * N * N + j * N + k] = c0 * input_tile[tz][ty][tx] + 
-                                             c1 * input_tile[tz][ty][tx - 1] + 
-                                             c2 * input_tile[tz][ty][tx + 1] + 
-                                             c3 * input_tile[tz][ty - 1][tx] + 
-                                             c4 * input_tile[tz][ty + 1][tx] + 
-                                             c5 * input_tile[tz - 1][ty][tx] + 
-                                             c6 * input_tile[tz + 1][ty][tx];
-            }
+    if (iStart >= 0 && iStart < N && j >= 0 && j < N && k >= 0 && k < N) {
+        in_curr_shared[ty][tx] = in[iStart * N * N + j * N + k];
+    }
+
+    for (int i = iStart; i < iStart + OUT_TILE_WIDTH; ++i) {
+        if (i + 1 < N && i + 1 < N && j >= 0 && j < N && k >= 0 && k < N) {
+            in_next_shared[ty][tx] = in[(i + 1) * N * N + j * N + k];
+        }
+
+        __syncthreads();
+
+        if (i >= 1 && i < N - 1 && j >= 1 && j < N - 1 && k >= 1 && k < N - 1) {
+            if (ty >= 1 && ty < IN_TILE_WIDTH - 1 && 
+                tx >= 1 && tx < IN_TILE_WIDTH - 1) {
+                    out[i * N * N + j * N + k] = c0 * in_curr_shared[ty][tx] + 
+                                                 c1 * in_curr_shared[ty][tx - 1] + 
+                                                 c2 * in_curr_shared[ty][tx + 1] + 
+                                                 c3 * in_curr_shared[ty + 1][tx] +
+                                                 c4 * in_curr_shared[ty - 1][tx] +
+                                                 c5 * in_prev_shared[ty][tx] +
+                                                 c6 * in_next_shared[ty][tx];
+                }
+        }
+        __syncthreads();
+
+        in_prev_shared[ty][tx] = in_curr_shared[ty][tx];
+        in_curr_shared[ty][tx] = in_next_shared[ty][tx];
     }
 }
 
-void stencilSweepShared(float *in, float *out, int N) {
+void stencilSweepCoarse(float *in, float *out, int N) {
     int size = N * N * N * sizeof(float);
 
     float *d_in, *d_out;
@@ -96,16 +113,17 @@ void stencilSweepShared(float *in, float *out, int N) {
     cudaMemcpyToSymbol(c5, &h_c5, sizeof(float));
     cudaMemcpyToSymbol(c6, &h_c6, sizeof(float));
 
-    // 4. Launch the kernel to perform the stencil computation.
-    dim3 dimBlock(IN_TILE_WIDTH, IN_TILE_WIDTH, IN_TILE_WIDTH);
-    dim3 dimGrid(ceil(N / (float)OUT_TILE_WIDTH), ceil(N / (float)OUT_TILE_WIDTH), ceil(N / (float)OUT_TILE_WIDTH));
+    // 4. Launch the kernel to perform the stencil computation 
+    // with thread coarsening in the z direction. 
+    dim3 dimBlock(IN_TILE_WIDTH, IN_TILE_WIDTH, 1);
+    dim3 dimGrid(ceil(N / (float)OUT_TILE_WIDTH), ceil(N / (float)OUT_TILE_WIDTH), 1);
 
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
     cudaEventRecord(start);
 
-    stencilSweepSharedKernel<<<dimGrid, dimBlock>>>(d_in, d_out, N);
+    stencilSweepCoarseKernel<<<dimGrid, dimBlock>>>(d_in, d_out, N);
     cudaDeviceSynchronize();
 
     cudaEventRecord(stop);
@@ -137,7 +155,7 @@ int main() {
 
     printMatrix(in, N, N, N);
 
-    stencilSweepShared(in, out, N);
+    stencilSweepCoarse(in, out, N);
 
     printMatrix(out, N, N, N);
 

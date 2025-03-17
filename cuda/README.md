@@ -109,13 +109,15 @@ nvcc -arch=sm_90 ....cu -o ...
 - [x] Integrate the softmax implemented in CUDA to the PyTorch framework.
 
 ### **Day 10**
-I am working on creating a CUDA kernel that performs layer normalization on input matrix of size batch_size x seq_len x embed_dim using shared memory here [layer_norm.cu](./day10/normalization/layer_norm.cu). I strongly believe that I need to learn reduction techniques in CUDA to make the code more efficient. I have created a normalization test file [normalization_test.py](./day10/normalization/normalization_test.py) to test the layer normalization kernel alongside the PyTorch layer normalization function with various configurations and outputs. I have worked on creating a CUDA kernel that performs self-attention here [self_attention.cu](./day10/attention/self_attention.cu).
+I am working on creating a CUDA kernel that performs layer normalization on input matrix of size batch_size x seq_len x embed_dim using shared memory here [layer_norm.cu](./day10/normalization/layer_norm.cu). I strongly believe that I need to learn reduction techniques in CUDA to make the code more efficient. I have created a normalization test file [normalization_test.py](./day10/normalization/normalization_test.py) to test the layer normalization kernel alongside the PyTorch layer normalization function with various configurations and outputs. I have worked on creating a CUDA kernel that performs self-attention here [self_attention.cu](./day10/attention/self_attention.cu). I want to come back to these optimizations later. 
 
 - [x] Create a CUDA kernel that performs layer normalization on input matrix using shared memory.
 - [x] Create a test file to test the layer normalization kernel alongside the PyTorch layer normalization function.
 - [x] Create a CUDA kernel that performs **self-attention**.
 
 ### **Day 11**
-I am reading the *chapter 8* of the book where I am learning about the stencil computations. I have created a simple CUDA kernel that performs a stencil computation on a 3D input array [stencil_sweep.cu](./day11/stencil_sweep.cu).
+I am reading the *chapter 8* of the book where I am learning about the stencil computations. I have created a simple CUDA kernel that performs a stencil computation on a 3D input array [stencil_sweep.cu](./day11/stencil_sweep.cu). I have also created a CUDA kernel that performs a stencil computation on a 3D input array using shared memory [stencil_sweep_shared.cu](./day11/stencil_sweep_shared.cu). I have also created a CUDA kernel that performs a stencil computation on a 3D input array using thread coarsening in the z direction [stencil_sweep_coarse.cu](./day11/stencil_sweep_coarse.cu). In each of these kernels, I have used the constant memory to store the coefficients of the stencil computation. **Thread coarsening** is one of the most important techniques to overcome the limitations of the parallelism with limited resources. 
 
 - [x] Create a CUDA kernel that performs a stencil computation on a 3D input array.
+- [x] Create a CUDA kernel that performs a stencil computation on a 3D input array using shared memory.
+- [x] Create a CUDA kernel that performs a stencil computation on a 3D input array using thread coarsening in the z direction.

@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 
-#define c0 0.00f
-#define c1 0.50f
-#define c2 0.87f
-#define c3 1.00f
-#define c4 0.87f
-#define c5 0.50f
-#define c6 0.00f
+__constant__ float c0;
+__constant__ float c1;
+__constant__ float c2;
+__constant__ float c3;
+__constant__ float c4;
+__constant__ float c5;
+__constant__ float c6;
 
 void printMatrix(float *matrix, int width, int height, int depth) {
     printf("\n\n");
@@ -46,6 +46,15 @@ void stencilSweep(float *in, float *out, int N) {
     int size = N * N * N * sizeof(float);
     float *in_d, *out_d;
 
+    // Initialize constant memory with coefficients. 
+    float h_c0 = 0.00f;
+    float h_c1 = 0.50f;
+    float h_c2 = 0.87f;
+    float h_c3 = 1.00f;
+    float h_c4 = 0.87f;
+    float h_c5 = 0.50f;
+    float h_c6 = 0.00f;
+
     // Part 1: Allocate device memory for input and output.
     cudaError_t err = cudaMalloc((void**)&in_d, size);
     if (err != cudaSuccess) {
@@ -59,7 +68,16 @@ void stencilSweep(float *in, float *out, int N) {
     // Part 2: Copy input to the device memory.
     cudaMemcpy(in_d, in, size, cudaMemcpyHostToDevice);
 
-    // Part 3: Launch the kernel.
+    // Part 3: Copy coefficients to the constant memory.
+    cudaMemcpyToSymbol(c0, &h_c0, sizeof(float));
+    cudaMemcpyToSymbol(c1, &h_c1, sizeof(float));
+    cudaMemcpyToSymbol(c2, &h_c2, sizeof(float));
+    cudaMemcpyToSymbol(c3, &h_c3, sizeof(float));
+    cudaMemcpyToSymbol(c4, &h_c4, sizeof(float));
+    cudaMemcpyToSymbol(c5, &h_c5, sizeof(float));
+    cudaMemcpyToSymbol(c6, &h_c6, sizeof(float));
+
+    // Part 4: Launch the kernel.
     dim3 dimBlock(8, 8, 8);
     dim3 dimGrid(ceil(N / 8.0), ceil(N / 8.0), ceil(N / 8.0));
 
