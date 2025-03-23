@@ -121,3 +121,9 @@ I am reading the *chapter 8* of the book where I am learning about the stencil c
 - [x] Create a CUDA kernel that performs a stencil computation on a 3D input array.
 - [x] Create a CUDA kernel that performs a stencil computation on a 3D input array using shared memory.
 - [x] Create a CUDA kernel that performs a stencil computation on a 3D input array using thread coarsening in the z direction.
+
+### **Day 12**
+I am reading the *chapter 9* of the book where I am learning the concept of histogram computations using atomic operations. I have created a CUDA kernel that performs a histogram computation on a 1D input array using atomic operations [histogram.cu](./day12/histogram.cu).
+
+- [x] Create a CUDA kernel that performs a histogram computation on a 1D input array using atomic operations.
+- 
