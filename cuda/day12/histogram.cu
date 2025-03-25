@@ -120,14 +120,27 @@ void histogramCudaPrivate(char *data, unsigned int *histogram, unsigned int N) {
     dim3 dimBlock(threads_per_block);
     dim3 dimGrid(blocks_per_grid);
 
-    histogramKernelPrivate<<<dimGrid, dimBlock>>>(d_data, d_histogram, N);
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start, 0);
 
+    histogramKernelPrivate<<<dimGrid, dimBlock>>>(d_data, d_histogram, N);
+    cudaDeviceSynchronize();
+
+    cudaEventRecord(stop, 0);
+    cudaEventSynchronize(stop);
+
+    float milliseconds = 0;
+    
     // 5. Copy the output data to the host.
     cudaMemcpy(histogram, d_histogram, size_histogram, cudaMemcpyDeviceToHost);
 
     // 6. Free the device memory.
     cudaFree(d_data);
     cudaFree(d_histogram);
+
+    printf("Time taken: %f ms\n", milliseconds);
 }
 
 int main() {
