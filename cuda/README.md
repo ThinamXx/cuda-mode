@@ -128,3 +128,8 @@ I am reading the *chapter 9* of the book where I am learning the concept of hist
 - [x] Create a CUDA kernel that performs a histogram computation on a 1D input array using atomic operations.
 - [x] Create a CUDA kernel that performs a histogram privatization on a 1D input array using shared memory.
 - [x] Create a CUDA kernel that performs a histogram coarsening on a 1D input array.
+
+### **Day 13**
+I am reading the **reduction** chapter of the book. The operator needs to be associative *(a + b) + c = a + (b + c)* and commutative *(a + b = b + a)*. I have created a CUDA kernel that performs a sum reduction on a 1D input array [sum_reduction.cu](./day13/sum_reduction.cu).
+
+- [x] Create a CUDA kernel that performs a sum reduction on a 1D input array.
