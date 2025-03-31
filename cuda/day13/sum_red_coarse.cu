@@ -2,19 +2,23 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 
-#define BLOCK_DIM 4
+#define BLOCK_DIM 4 
+#define COARSE_FACTOR 2
 
-__global__ void sumReductionSegmentShared(float *input, float *output) {
+__global__ void sumReductionCoarse(float *input, float *output) {
     __shared__ float shared_data[BLOCK_DIM];
 
-    // Each block will process one segment and each block will 
-    // process 2 * BLOCK_DIM elements.
-    unsigned int segment = 2 * BLOCK_DIM * blockIdx.x; 
+    unsigned int segment = COARSE_FACTOR * 2 * BLOCK_DIM * blockIdx.x;
 
-    unsigned int tid = threadIdx.x;
     unsigned int segment_tid = segment + threadIdx.x;
+    unsigned int tid = threadIdx.x;
 
-    shared_data[tid] = input[segment_tid] + input[segment_tid + BLOCK_DIM];
+    float sum = input[segment_tid];
+    for (unsigned int tile = 1; tile < COARSE_FACTOR * 2; tile++) { // each thread will process COARSE_FACTOR * 2 elements.
+        sum += input[segment_tid + tile * BLOCK_DIM];
+    }
+
+    shared_data[tid] = sum;
     __syncthreads();
 
     for (unsigned int stride = BLOCK_DIM / 2; stride >= 1; stride /= 2) {
@@ -29,7 +33,6 @@ __global__ void sumReductionSegmentShared(float *input, float *output) {
         atomicAdd(output, shared_data[0]);
     }
 }
-
 
 void sumReduction(float *input, float *output_optimized, int N) {
     int size = N * sizeof(float);
@@ -58,7 +61,7 @@ void sumReduction(float *input, float *output_optimized, int N) {
     cudaEventCreate(&stop);
     cudaEventRecord(start);
 
-    sumReductionSegmentShared<<<grid, block>>>(d_input_optimized, d_output_optimized);
+    sumReductionCoarse<<<grid, block>>>(d_input_optimized, d_output_optimized);
     cudaDeviceSynchronize();
 
     cudaEventRecord(stop);

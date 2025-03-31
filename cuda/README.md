@@ -130,8 +130,9 @@ I am reading the *chapter 9* of the book where I am learning the concept of hist
 - [x] Create a CUDA kernel that performs a histogram coarsening on a 1D input array.
 
 ### **Day 13**
-I am reading the **reduction** chapter of the book. The operator needs to be associative *(a + b) + c = a + (b + c)* and commutative *(a + b = b + a)*. I have created a CUDA kernel that performs a sum reduction with optimized memory access on a 1D input array [sum_reduction.cu](./day13/sum_reduction.cu). I have also created a CUDA kernel that performs a sum reduction with shared memory on a 1D input array [sum_reduction_shared.cu](./day13/sum_reduction_shared.cu). I have also created a CUDA kernel that divides the input array into segments and performs a sum reduction on each segment with shared memory [sum_segment_shared.cu](./day13/sum_segment_shared.cu).
+I am reading the **reduction** chapter of the book. The operator needs to be associative *(a + b) + c = a + (b + c)* and commutative *(a + b = b + a)*. I have created a CUDA kernel that performs a sum reduction with optimized memory access on a 1D input array [sum_reduction.cu](./day13/sum_reduction.cu). I have also created a CUDA kernel that performs a sum reduction with shared memory on a 1D input array [sum_reduction_shared.cu](./day13/sum_reduction_shared.cu). I have also created a CUDA kernel that divides the input array into segments and performs a sum reduction on each segment with shared memory [sum_segment_shared.cu](./day13/sum_segment_shared.cu). I have also created the kernel that performs sum reduction with thread coarsening [sum_red_coarse.cu](./day13/sum_red_coarse.cu).
 
 - [x] Create a CUDA kernel that performs a sum reduction on a 1D input array.
 - [x] Create a CUDA kernel that performs a sum reduction with shared memory on a 1D input array.
 - [x] Create a CUDA kernel that divides the input array into segments and performs a sum reduction on each segment with shared memory.
+- [x] Create a CUDA kernel that performs a sum reduction with thread coarsening on a 1D input array.
