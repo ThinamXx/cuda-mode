@@ -51,8 +51,8 @@ void sumReduction(float *input, float *output_optimized, int N) {
 
     // 3. Launch the kernel. 
     dim3 block(BLOCK_DIM, 1, 1);
-    dim3 grid(1, 1, 1);
-
+    dim3 grid(ceil(N / float(2 * BLOCK_DIM)), 1, 1);
+    
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);

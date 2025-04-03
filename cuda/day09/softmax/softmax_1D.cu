@@ -48,7 +48,20 @@ void softmax(float *x, float *y, int n) {
     // 3. Call the kernel to launch the grid of threads.
     dim3 blockDim(256, 1, 1);
     dim3 gridDim(ceil(n / 256.0), 1, 1);
+
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start, 0);
+
     online_softmax_kernel<<<gridDim, blockDim>>>(d_x, d_y, n);
+    cudaDeviceSynchronize();
+    cudaEventRecord(stop, 0);
+    cudaEventSynchronize(stop);
+
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+    printf("Softmax kernel execution time: %f ms\n", milliseconds);
     
     // Check for kernel launch errors.
     err = cudaGetLastError();
