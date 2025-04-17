@@ -87,7 +87,7 @@ python prewitt_kernel_test.py
 - [x] Integrate the Prewitt filter implemented in CUDA to the PyTorch framework.
 
 ### **Day 09**
-I am working on creating a CUDA kernel that convolves a 3D array with a filter. I have started working on creating a kernel that computes the softmax of a 1D array [softmax_1D.cu](./day09/softmax/softmax_1D.cu). I have created a CUDA kernel that computes the softmax of a 2D array [softmax_2D.cu](./day09/softmax/softmax_2D.cu) along with the test file [softmax_test.py](./day09/softmax/softmax_test.py) to test the kernel alongside the PyTorch softmax function.
+I am working on creating a CUDA kernel that convolves a 3D array with a filter. I have started working on creating a kernel that computes the softmax of a 1D array [softmax_1D.cu](./day09/softmax/softmax_1D.cu). I have created a CUDA kernel that computes the softmax of a 2D array [softmax_2D.cu](./day09/softmax/softmax_2D.cu) along with the test file [softmax_test.py](./day09/softmax/softmax_test.py) to test the kernel alongside the PyTorch softmax function. I have also created a CUDA kernel that computes the softmax of a 2D array using reduction [softmax_reduce.cu](./day09/softmax/softmax_reduce.cu) and updated the test file [softmax_test.py](./day09/softmax/softmax_test.py) to test the kernel alongside the PyTorch softmax function.
 
 ```bash
 # RTX 3000 series.
@@ -107,6 +107,7 @@ nvcc -arch=sm_90 ....cu -o ...
 - [x] Create a CUDA kernel that computes the softmax of a 1D array.
 - [x] Create a CUDA kernel that computes the softmax of a 2D array.
 - [x] Integrate the softmax implemented in CUDA to the PyTorch framework.
+- [x] Create a CUDA kernel that computes the softmax of a 2D array using reduction.
 
 ### **Day 10**
 I am working on creating a CUDA kernel that performs layer normalization on input matrix of size batch_size x seq_len x embed_dim using shared memory here [layer_norm.cu](./day10/normalization/layer_norm.cu). I strongly believe that I need to learn reduction techniques in CUDA to make the code more efficient. I have created a normalization test file [normalization_test.py](./day10/normalization/normalization_test.py) to test the layer normalization kernel alongside the PyTorch layer normalization function with various configurations and outputs. I have worked on creating a CUDA kernel that performs self-attention here [self_attention.cu](./day10/attention/self_attention.cu). I want to come back to these optimizations later. 
