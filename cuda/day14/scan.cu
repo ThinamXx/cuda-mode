@@ -2,10 +2,42 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 
+#define SECTION_SIZE 32
+
 void sequentialScanCPU(float *input, float *output, int N) {
     output[0] = input[0];
     for (int idx = 1; idx < N; ++idx) {
         output[idx] = output[idx - 1] + input[idx];
+    }
+}
+
+__global__ void scanKernel(float *input, float *output, int N) {
+    __shared__ float XY[SECTION_SIZE];
+    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x; 
+
+    if (idx < N) {
+        XY[threadIdx.x] = input[idx];
+    } else {
+        XY[threadIdx.x] = 0.0f;
+    }
+    __syncthreads();
+
+    for (unsigned int stride = 1; stride < blockDim.x; stride *= 2) {
+        float temp;
+
+        if (threadIdx.x >= stride) {
+            temp = XY[threadIdx.x] + XY[threadIdx.x - stride];
+        }
+        __syncthreads();
+
+        if (threadIdx.x >= stride) {
+            XY[threadIdx.x] = temp;
+        }
+        __syncthreads();
+    }
+
+    if (idx < N) {
+        output[idx] = XY[threadIdx.x];
     }
 }
 
@@ -28,9 +60,9 @@ void sequentialScan(float *input, float *output, int N) {
     cudaMemcpy(d_input, input, size, cudaMemcpyHostToDevice);
 
     // 3. Launch the kernel to perform the scan.
-    dim3 dimGrid(ceil(N / 256.0), 1, 1);
-    dim3 dimBlock(256, 1, 1);
-    // scanKernel<<<dimGrid, dimBlock>>>(d_input, d_output, N);
+    dim3 dimGrid(ceil(N / (float)SECTION_SIZE), 1, 1);
+    dim3 dimBlock(SECTION_SIZE, 1, 1);
+    scanKernel<<<dimGrid, dimBlock>>>(d_input, d_output, N);
 
     // 4. Copy the result from the device to the host.
     cudaMemcpy(output, d_output, size, cudaMemcpyDeviceToHost);
@@ -46,12 +78,18 @@ int main() {
     float output[N];
     float output_cpu[N];
 
-    // sequentialScan(input, output, N);
     sequentialScanCPU(input, output_cpu, N);
+    sequentialScan(input, output, N);
 
     printf("Sequential scan result: ");
     for (int i = 0; i < N; i++) {
         printf("%f ", output_cpu[i]);
+    }
+    printf("\n");
+
+    printf("Parallel scan result: ");
+    for (int i = 0; i < N; i++) {
+        printf("%f ", output[i]);
     }
     printf("\n");
 

@@ -136,4 +136,9 @@ I am reading the **reduction** chapter of the book. The operator needs to be ass
 - [x] Create a CUDA kernel that performs a sum reduction on a 1D input array.
 - [x] Create a CUDA kernel that performs a sum reduction with shared memory on a 1D input array.
 - [x] Create a CUDA kernel that divides the input array into segments and performs a sum reduction on each segment with shared memory.
-- [x] Create a CUDA kernel that performs a sum reduction with thread coarsening on a 1D input array.
+- [x] Create a CUDA kernel that performs a sum reduction with thread coarsening on a 1D input array.  
+
+### **Day 14**  
+I am learning parallel scan (prefix sum) with reduction. I have created a CUDA kernel that performs a parallel scan with reduction on an input array [scan.cu](./day14/scan.cu).
+
+- [x] Create a CUDA kernel that performs a parallel scan with reduction on an input array.
